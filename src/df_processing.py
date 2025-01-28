@@ -1,6 +1,6 @@
 from google.transit import gtfs_realtime_pb2
 from config import vehicles_url
-from scraper import scrape_gtfs_rt
+from src.scraper import scrape_gtfs_rt
 from datetime import datetime, timezone, timedelta
 import pandas as pd
 
