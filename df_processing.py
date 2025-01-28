@@ -5,39 +5,50 @@ from datetime import datetime, timezone, timedelta
 import pandas as pd
 
 
-
 def parse_protobuf_to_dataframe(file_path):
-    #Read raw Protobuf data
+    # Read raw Protobuf data
     feed = gtfs_realtime_pb2.FeedMessage()
     feed.ParseFromString(scrape_gtfs_rt(file_path))
-    #Parse entities into a DataFrame
+    # Parse entities into a DataFrame
     data = []
     for entity in feed.entity:
-        if entity.HasField('vehicle'):
-                vehicle = entity.vehicle
-                
-                vehicle_speed = round(vehicle.position.speed, 2)
-                utc_time = datetime.fromtimestamp(vehicle.timestamp, tz=timezone.utc)
-                eastern_time = timezone(timedelta(hours=-5))
-                local_time = utc_time.astimezone(eastern_time)
-                formatted_time = local_time.strftime('%Y-%m-%d %H:%M:%S')
-                
-                data.append(
+        if entity.HasField("vehicle"):
+            vehicle = entity.vehicle
+            vehicle_speed = round(vehicle.position.speed, 2)
+
+            #Timestamp formatting
+            utc_time = datetime.fromtimestamp(vehicle.timestamp, tz=timezone.utc)
+            eastern_time = timezone(timedelta(hours=-5))
+            local_time = utc_time.astimezone(eastern_time)
+            formatted_time = local_time.strftime("%Y-%m-%d %H:%M:%S")
+
+            #Occupancy Status mapping from integer to string representation
+            occupancy = vehicle.occupancy_status
+            occupancy_mapping = {
+                0: "EMPTY",
+                1: "MANY_SEATS_AVAILABLE",
+                2: "FEW_SEATS_AVAILABLE",
+                3: "STANDING_ROOM_ONLY",
+                4: "CRUSHED_STANDING_ROOM_ONLY",
+                5: "FULL",
+                6: "NOT_ACCEPTING_PASSENGERS",
+            }
+            occupancy_status = occupancy_mapping.get(occupancy, "UNKNOWN")
+
+            data.append(
                 {
-                    "route_id" : vehicle.trip.route_id, 
-                    "vehicle_id": vehicle.vehicle.id, 
-                    "latitude" : vehicle.position.latitude,
-                    "longitude" : vehicle.position.longitude,
-                    "bearing" : vehicle.position.bearing, 
-                    "speed" : vehicle_speed,  
-                    "last_updated" : formatted_time,                   
-                    "occupancy_status" : vehicle.occupancy_status
-                        }
-                    )      
+                    "route_id": vehicle.trip.route_id,
+                    "vehicle_id": vehicle.vehicle.id,
+                    "latitude": vehicle.position.latitude,
+                    "longitude": vehicle.position.longitude,
+                    "bearing": vehicle.position.bearing,
+                    "speed": vehicle_speed,
+                    "last_updated": formatted_time,
+                    "occupancy_status": occupancy_status,
+                }
+            )
     return pd.DataFrame(data)
-      
-      
-    
+
+
 vehicle_df = parse_protobuf_to_dataframe(vehicles_url)
 print(vehicle_df)
-            
