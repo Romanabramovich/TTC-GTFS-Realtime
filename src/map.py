@@ -55,7 +55,7 @@ def preprocess_and_cache_data(bus_number):
 
 
 def get_route_color(route_id):
-    routes_info = pd.read_csv("./TTC-GTFS-Static/routes.txt", dtype={"route_id" : str})
+    routes_info = pd.read_csv("./TTC-GTFS-Static/routes.txt", dtype={"route_id": str})
 
     route = routes_info[routes_info["route_id"] == str(route_id)]
     print(f"Route Route\n {route}")
@@ -73,9 +73,12 @@ def get_live_bus_locations(toronto_map, vehicle_df):
     marker_cluster = MarkerCluster().add_to(toronto_map)
 
     for _, vehicle in vehicle_df.iterrows():
+        print(vehicle)
+
         folium.Marker(
             location=[vehicle["latitude"], vehicle["longitude"]],
         ).add_to(marker_cluster)
+    return marker_cluster
 
 
 def visualize_route(bus_number):
@@ -116,15 +119,15 @@ def visualize_route(bus_number):
             )
 
     # Get live bus locations
-    # vehicle_df = parse_protobuf_to_dataframe(route_id)
-    # get_live_bus_locations(toronto_map, vehicle_df)
+    vehicle_df = parse_protobuf_to_dataframe(85)
+    get_live_bus_locations(toronto_map, vehicle_df)
 
     # Save the map
     map_path = "./templates/toronto_map.html"
     toronto_map.save(map_path)
 
 
-route_id = "165"
-
+route_id = "85"
+print(parse_protobuf_to_dataframe)
 # Visualize the selected routes
 visualize_route(route_id)
