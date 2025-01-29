@@ -11,7 +11,6 @@ def parse_protobuf_to_dataframe(route_id):
     feed.ParseFromString(scrape_gtfs_rt(vehicles_url))
     # Parse entities into a DataFrame
     data = []
-
     for entity in feed.entity:
         if entity.HasField("vehicle"):
             vehicle = entity.vehicle
@@ -43,13 +42,13 @@ def parse_protobuf_to_dataframe(route_id):
                         "vehicle_id": vehicle.vehicle.id,
                         "latitude": vehicle.position.latitude,
                         "longitude": vehicle.position.longitude,
-                        "last_updated": formatted_time,
                         "bearing": vehicle.position.bearing,
                         "speed": vehicle_speed,
                         "occupancy_status": occupancy_status,
+                        "last_updated": formatted_time,
                     }
                 )
-        return pd.DataFrame(data)
+    return pd.DataFrame(data)
 
 
-print(parse_protobuf_to_dataframe(73399))
+print(parse_protobuf_to_dataframe(105))
