@@ -55,14 +55,15 @@ def preprocess_and_cache_data(bus_number):
 
 
 def get_route_color(route_id):
-    routes_info = pd.read_csv("./TTC-GTFS-Static/routes.txt")
+    routes_info = pd.read_csv("./TTC-GTFS-Static/routes.txt", dtype={"route_id" : str})
 
     route = routes_info[routes_info["route_id"] == str(route_id)]
-
+    print(f"Route Route\n {route}")
     if not route.empty:
         route_color = (
             route.iloc[0]["route_color"] if "route_color" in route.columns else "000000"
         )
+        print(f"route color is {route_color}")
         return f"#{route_color}"
     else:
         return "000000"
@@ -85,7 +86,9 @@ def visualize_route(bus_number):
     print(f"---------------Now Visualizing route {route_id} ----------------")
     filtered_trips = pd.read_csv("./filtered_trips.csv", dtype={"shape_id": str})
     print(filtered_trips)
-    filtered_shapes = pd.read_csv("./filtered_shapes.csv")
+    filtered_shapes = pd.read_csv(
+        "./filtered_shapes.csv", dtype={"shape_pt_lon": float, "shape_pt_lat": float}
+    )
     print(filtered_shapes)
 
     toronto_map = folium.Map(
@@ -101,22 +104,27 @@ def visualize_route(bus_number):
         # print(f"No shape data found for bus number {bus_number} (route_id {route_id})!")
     else:
         route_color = get_route_color(route_id)
-        for _, group in filtered_shapes.groupby("shape_id"):
+        for shape_id, group in filtered_shapes.groupby("shape_id"):
+            group = group.sort_values("shape_pt_sequence")
             points = group[["shape_pt_lat", "shape_pt_lon"]].values.tolist()
+
+            if len(points) == 0:
+                print(f"⚠️ Warning: No points found for shape_id {shape_id}!")
+
             folium.PolyLine(points, color=route_color, weight=5, opacity=0.8).add_to(
                 toronto_map
             )
 
     # Get live bus locations
-    vehicle_df = parse_protobuf_to_dataframe(route_id)
-    get_live_bus_locations(toronto_map, vehicle_df)
+    # vehicle_df = parse_protobuf_to_dataframe(route_id)
+    # get_live_bus_locations(toronto_map, vehicle_df)
 
     # Save the map
     map_path = "./templates/toronto_map.html"
     toronto_map.save(map_path)
 
 
-route_id = "116"
+route_id = "165"
 
 # Visualize the selected routes
 visualize_route(route_id)

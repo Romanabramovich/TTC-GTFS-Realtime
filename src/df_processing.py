@@ -49,9 +49,6 @@ def parse_protobuf_to_dataframe(route_id):
                         "occupancy_status": occupancy_status,
                     }
                 )
-    if len(data) == 0:
-        return None
-    else:   
         return pd.DataFrame(data)
 
 
