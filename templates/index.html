@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live TTC Bus Tracker</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>🚍 TTC Live Bus Tracker</h2>
+            
+            <form method="POST">
+                <label for="bus_number">Enter Bus Number:</label>
+                <input type="text" id="bus_number" name="bus_number" placeholder="e.g., 385" required>
+                <button type="submit">Track Bus</button>
+            </form>
+
+            {% if error %}
+                <p class="error">{{ error }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Map Display -->
+        <div class="map-container">
+            {% if map_file %}
+                <iframe src="{{ url_for('serve_map') }}" allowfullscreen></iframe>
+            {% else %}
+                <p style="color: white; text-align: center; margin-top: 50px;">
+                    Enter a bus number to see the live route map.
+                </p>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>
