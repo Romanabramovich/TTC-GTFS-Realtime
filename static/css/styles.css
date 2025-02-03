@@ -1,6 +1,6 @@
 /* General Styles */
 body { 
-    font-family: Arial, sans-serif; 
+    font-family: Roboto, sans-serif; 
     margin: 0;
     padding: 0;
     display: flex;
@@ -23,9 +23,10 @@ body {
 .sidebar {
     width: 30%;
     padding: 20px;
-    background: white;
+    background: #DA251D;
     border-radius: 10px;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    color: white;
 }
 
 h2 {
@@ -54,7 +55,7 @@ input {
 }
 
 button {
-    background: #007bff;
+    background: black;
     color: white;
     padding: 10px;
     border: none;
@@ -65,7 +66,8 @@ button {
 }
 
 button:hover {
-    background: #0056b3;
+    background: white;
+    color: black;
 }
 
 /* Map Container */
@@ -74,6 +76,11 @@ button:hover {
     height: 100%;
     border-radius: 10px;
     overflow: hidden;
+}
+.map-container >p {
+    color: red;
+    text-align: center; 
+    margin-top: 50px;
 }
 
 iframe {
@@ -85,7 +92,8 @@ iframe {
 
 /* Error Message */
 p.error {
-    color: red;
+    color: white;
     text-align: center;
     font-weight: bold;
 }
+
