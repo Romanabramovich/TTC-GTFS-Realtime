@@ -65,9 +65,17 @@ def get_static_bus_route(bus_number):
 
     # Add live bus locations to map
     for _, vehicle in vehicle_df.iterrows():
+
+        popup_html = f"""
+        <b>Vehicle ID:</b> {vehicle["vehicle_id"]}<br>
+        <b>Speed:</b> {vehicle["speed"]} km/h<br>
+        <b>Occupancy:</b> {vehicle["occupancy_status"]}<br>
+        """
         bus_icon = folium.CustomIcon(bus_icon_path, icon_size=(30, 25))
         folium.Marker(
-            location=[vehicle["latitude"], vehicle["longitude"]], icon=bus_icon
+            location=[vehicle["latitude"], vehicle["longitude"]],
+            icon=bus_icon,
+            popup=popup_html,
         ).add_to(toronto_map)
 
     # Save the map inside the templates folder
