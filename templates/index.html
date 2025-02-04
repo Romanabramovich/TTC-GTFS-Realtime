@@ -20,10 +20,13 @@
             
             <form method="POST">
                 <label for="bus_number">Enter Bus Number:</label>
-                <input type="text" id="bus_number" name="bus_number" placeholder="e.g., 54" required>
+                <input type="text" id="bus_number" name="bus_number" placeholder="e.g., 53" required>
                 <button type="submit">Track Bus</button>
             </form>
 
+            <p>
+                Easily track live TTC buses and streetcars on your favorite route in real time. Just enter a route number and see active vehicles instantly!
+            </p>
             {% if error %}
                 <p class="error">{{ error }}</p>
             {% endif %}
