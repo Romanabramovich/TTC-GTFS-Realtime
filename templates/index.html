@@ -10,7 +10,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:wght@200&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/ttc_logo.png') }}">
 
+    <script>
+        function refreshMap() {
+            const iframe = document.getElementById('map-frame');
+            if (iframe) {
+                iframe.src = iframe.src; // Refresh the iframe to update map
+            }
+        }
+    
+        // Auto-refresh the map every 30 seconds
+        setInterval(refreshMap, 30000);
+    </script>
+    
 </head>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
 <body>
 
     <div class="container">
@@ -35,7 +49,7 @@
         <!-- Map Display -->
         <div class="map-container">
             {% if map_file %}
-                <iframe src="{{ url_for('serve_map') }}" allowfullscreen></iframe>
+                <iframe id="map-frame" src="{{ url_for('serve_map') }}" allowfullscreen></iframe>
             {% else %}
                 <p>
                     Enter a bus number to see the live route map.
