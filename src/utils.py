@@ -1,5 +1,4 @@
 import pandas as pd
-import math
 
 def get_route_id(short_name):
     """Fetch the GTFS route_id for a given bus number."""
