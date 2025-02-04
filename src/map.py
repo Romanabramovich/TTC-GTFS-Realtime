@@ -9,7 +9,6 @@ def get_static_bus_route(bus_number):
     """Visualizes the bus route and live vehicle locations on a map."""
     route_id = preprocess_and_cache_data(bus_number)
     if not route_id:
-        print(f"🚨 No valid route_id found for bus {bus_number}.")
         return None  # Return None if no route ID
 
     filtered_trips = pd.read_csv("./filtered_trips.csv", dtype={"shape_id": str})
@@ -29,7 +28,6 @@ def get_static_bus_route(bus_number):
     shape_ids = filtered_trips["shape_id"].unique().tolist()
 
     if len(shape_ids) == 0:
-        print(f"🚨 No shape data found for bus {bus_number} (route_id {route_id})!")
         return None  # Stop execution if no shape IDs exist
 
     route_color = get_route_color(route_id)
@@ -40,8 +38,8 @@ def get_static_bus_route(bus_number):
         points = group[["shape_pt_lat", "shape_pt_lon"]].values.tolist()
 
         if len(points) == 0:
-            print(f"⚠️ Warning: No points found for shape_id {shape_id}!")
-            continue  # Skip this shape and move to the next one
+            # Skip this shape and move to the next one
+            continue
 
         shape_data_exists = True  # At least one shape exists
         folium.PolyLine(points, color=route_color, weight=3, opacity=0.6).add_to(
@@ -49,8 +47,8 @@ def get_static_bus_route(bus_number):
         )
 
     if not shape_data_exists:
-        print(f"🚨 No valid shape data available for route {route_id}.")
-        return None  # Don't save a blank map
+        # Don't save a blank map
+        return None
 
     # Get live bus locations
     vehicle_df = parse_protobuf_to_dataframe(bus_number)
@@ -81,6 +79,5 @@ def get_static_bus_route(bus_number):
     # Save the map inside the templates folder
     map_path = os.path.join(templates_path, "toronto_map.html")
     toronto_map.save(map_path)
-    print(f"✅ Map successfully saved at {map_path}")
 
     return "toronto_map.html"

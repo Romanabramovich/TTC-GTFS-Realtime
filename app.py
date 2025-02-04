@@ -17,7 +17,6 @@ def index():
                 "index.html", error="Invalid Bus Number or No Data Found"
             )
 
-        # ✅ Pass the correct map path
         return render_template("index.html", map_file="toronto_map.html")
 
     return render_template("index.html")
