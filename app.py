@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, send_from_directory
 from src.map import get_static_bus_route
+from src.df_processing import get_recent_timestamp
 import os
 
 app = Flask(__name__)
@@ -11,13 +12,16 @@ def index():
     if request.method == "POST":
         bus_number = request.form.get("bus_number")
         map_file = get_static_bus_route(bus_number)
+        update_timestamp = get_recent_timestamp()
 
         if not map_file:
             return render_template(
                 "index.html", error="Invalid Bus Number or No Data Found"
             )
 
-        return render_template("index.html", map_file="toronto_map.html")
+        return render_template(
+            "index.html", map_file="toronto_map.html", update_timestamp=update_timestamp
+        )
 
     return render_template("index.html")
 

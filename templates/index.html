@@ -3,24 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Live TTC Bus Tracker</title>
+
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:wght@200&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/ttc_logo.png') }}">
-
-    <script>
-        function refreshMap() {
-            const iframe = document.getElementById('map-frame');
-            if (iframe) {
-                iframe.src = iframe.src; // Refresh the iframe to update map
-            }
-        }
-    
-        // Auto-refresh the map every 30 seconds
-        setInterval(refreshMap, 30000);
-    </script>
     
 </head>
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
@@ -44,7 +34,12 @@
             {% if error %}
                 <p class="error">{{ error }}</p>
             {% endif %}
+
+            <div class="update-timestamp">
+                <p>Last vehicle update was at: {{ update_timestamp }}</p>
+            </div>
         </div>
+
 
         <!-- Map Display -->
         <div class="map-container">

@@ -110,3 +110,33 @@ def parse_protobuf_to_dataframe(bus_number):
 
     # Convert list to DataFrame
     return pd.DataFrame(data)
+
+
+def get_recent_timestamp():
+
+    raw_data = scrape_gtfs_rt(vehicles_url)
+    if raw_data is None:
+        print("Error: GTFS-RT data could not be fetched.")
+        return None
+
+    # Parse Protobuf
+    feed = gtfs_realtime_pb2.FeedMessage()
+    try:
+        feed.ParseFromString(raw_data)
+    except Exception as e:
+        print(f"Error: Failed to parse GTFS-RT data: {e}")
+        return None
+
+    # Safely get timestamp
+    update_timestamp = getattr(feed.header, "timestamp", None)
+    if update_timestamp is None:
+        return None  # Better than returning "Unknown"
+
+    else:
+        utc_time = datetime.fromtimestamp(update_timestamp, tz=timezone.utc)
+        eastern_time = timezone(timedelta(hours=-5))
+        formatted_update_timestamp = utc_time.astimezone(eastern_time).strftime(
+            "%Y-%m-%d %I:%M:%S %p"  # 12-hour format with AM/PM
+        )
+
+    return formatted_update_timestamp
