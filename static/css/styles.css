@@ -7,7 +7,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #f5f5f5;
+    background-color: #8484847f;
 }
 
 /* Container Layout */
@@ -23,7 +23,7 @@ body {
 .sidebar {
     width: 30%;
     padding: 20px;
-    background: #DA251D;
+    background: #d2232a;
     border-radius: 10px;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
     color: white;
@@ -38,6 +38,8 @@ h2 {
 form {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
 
 label {
@@ -47,7 +49,8 @@ label {
 
 input {
     width: 100%;
-    padding: 8px;
+    max-width: 300px;
+    padding: 10px;
     margin-bottom: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -96,4 +99,5 @@ p.error {
     text-align: center;
     font-weight: bold;
 }
+
 
