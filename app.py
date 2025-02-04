@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, send_from_directory
 from src.map import get_static_bus_route
-from src.df_processing import get_recent_timestamp
+from src.df_processing import get_recent_timestamp, get_bus_number_alert
 import os
 
 app = Flask(__name__)
@@ -10,8 +10,9 @@ app = Flask(__name__)
 def index():
     """Main page where users can input a bus number and view the map."""
     if request.method == "POST":
-        bus_number = request.form.get("bus_number")
+        bus_number = request.form.get("bus_number") 
         map_file = get_static_bus_route(bus_number)
+        bus_alert = get_bus_number_alert(bus_number)
         update_timestamp = get_recent_timestamp()
 
         if not map_file:
@@ -20,7 +21,10 @@ def index():
             )
 
         return render_template(
-            "index.html", map_file="toronto_map.html", update_timestamp=update_timestamp
+            "index.html",
+            map_file="toronto_map.html",
+            update_timestamp=update_timestamp,
+            bus_alert=bus_alert,
         )
 
     return render_template("index.html")

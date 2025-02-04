@@ -38,6 +38,14 @@
             <div class="update-timestamp">
                 <p>Last vehicle update was at: {{ update_timestamp }}</p>
             </div>
+            <div class="bus-alert">
+                {% if bus_alert is none %}
+                    <p id="not-alerted">All active vehicles are operating as scheduled</p>
+                {% else %}
+                    <p id="alerted">{{ bus_alert }}</p>
+                    
+                {% endif %}
+            </div>
         </div>
 
 
