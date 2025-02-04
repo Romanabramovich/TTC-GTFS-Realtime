@@ -5,5 +5,5 @@ load_dotenv()
 
 vehicles_url = os.getenv("vehicles_url")
 trips_url = os.getenv("trips_url")
-alert_url = os.getenv("alerts_url")
+alerts_url = os.getenv("alerts_url")
 
