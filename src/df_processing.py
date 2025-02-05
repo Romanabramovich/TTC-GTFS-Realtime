@@ -1,5 +1,5 @@
 from google.transit import gtfs_realtime_pb2
-from src.config import vehicles_url
+from src.config import vehicles_url, alerts_url
 from src.scraper import scrape_gtfs_rt
 from datetime import datetime, timezone, timedelta
 import pandas as pd
@@ -54,13 +54,13 @@ def parse_protobuf_to_dataframe(bus_number):
         if entity.HasField("vehicle"):
             vehicle = entity.vehicle
 
-            # Ensure the correct route_id is used
+            # Ensure correct route_id is used
             if vehicle.trip.route_id != str(bus_number):
 
-                # Skip if not the correct bus
+                # Skip if not correct bus
                 continue
 
-            # Handle missing timestamp
+            # Handle timestamp formatting & default value
             timestamp = getattr(vehicle, "timestamp", None)
             if timestamp:
                 utc_time = datetime.fromtimestamp(timestamp, tz=timezone.utc)
@@ -71,7 +71,7 @@ def parse_protobuf_to_dataframe(bus_number):
             else:
                 formatted_time = "Unknown"
 
-            # Handle missing position data
+            # Handle vehicle position data & default value
             if hasattr(vehicle, "position"):
                 latitude = getattr(vehicle.position, "latitude", None)
                 longitude = getattr(vehicle.position, "longitude", None)
@@ -80,7 +80,7 @@ def parse_protobuf_to_dataframe(bus_number):
             else:
                 latitude, longitude, bearing, speed = None, None, None, 0
 
-            # Map occupancy status
+            # Occupancy status mapping
             occupancy_mapping = {
                 0: "EMPTY",
                 1: "MANY_SEATS_AVAILABLE",
@@ -112,8 +112,43 @@ def parse_protobuf_to_dataframe(bus_number):
     return pd.DataFrame(data)
 
 
-def get_recent_timestamp():
+def get_bus_number_alert(bus_number):
+    raw_data = scrape_gtfs_rt(alerts_url)
 
+    if raw_data is None:
+        print("Error: GTFS-RT data could not be fetched.")
+        return None
+
+    if not raw_data: 
+        print("Error: GTFS-RT data is empty.")
+        return None
+
+    # Parse Protobuf
+    feed = gtfs_realtime_pb2.FeedMessage()
+    try:
+        feed.ParseFromString(raw_data)
+    except Exception as e:
+        print(f"Error: Failed to parse GTFS-RT data: {e}")
+        return None
+
+    # Process alerts if parsing was successful
+    for entity in feed.entity:
+        if entity.HasField("alert"):
+            alert = entity.alert
+
+            if any(
+                informed_entity.route_id == str(bus_number)
+                for informed_entity in alert.informed_entity
+            ):
+                if alert.description_text.translation:
+                    return alert.description_text.translation[
+                        0
+                    ].text  # Return english translation of alert
+
+    return None  # No alert found
+
+
+def get_recent_timestamp():
     raw_data = scrape_gtfs_rt(vehicles_url)
     if raw_data is None:
         print("Error: GTFS-RT data could not be fetched.")
@@ -127,11 +162,10 @@ def get_recent_timestamp():
         print(f"Error: Failed to parse GTFS-RT data: {e}")
         return None
 
-    # Safely get timestamp
+    # Handle timestamp and default value
     update_timestamp = getattr(feed.header, "timestamp", None)
     if update_timestamp is None:
-        return None  # Better than returning "Unknown"
-
+        return None
     else:
         utc_time = datetime.fromtimestamp(update_timestamp, tz=timezone.utc)
         eastern_time = timezone(timedelta(hours=-5))
@@ -140,3 +174,4 @@ def get_recent_timestamp():
         )
 
     return formatted_update_timestamp
+
